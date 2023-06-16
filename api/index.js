@@ -30,7 +30,7 @@ db.connect((err) => {
 });
 
 export const homeDir = dirname(import.meta);
-app.use('/uploads', express.static(path.join(currentPath, '/uploads')));
+app.use('/uploads', express.static(path.join(homeDir, '/uploads')));
 app.use(morgan('dev'));
 
 // route

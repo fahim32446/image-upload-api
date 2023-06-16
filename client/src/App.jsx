@@ -4,7 +4,7 @@ import SignUp from './pages/auth/SignUp';
 import ForgotPass from './pages/auth/ForgotPass';
 import Layout from './pages/Layout/Layout';
 import Add_Vector from './pages/Vector_Wall/Pages/Add_Vector';
-import View_Vector from './pages/Vector_Wall/Pages/View_Vector';
+import List_Vector from './pages/Vector_Wall/Pages/List_Vector';
 import Update_Vector from './pages/Vector_Wall/Pages/Update_Vector';
 
 const router = createBrowserRouter([
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
 
       {
         path: '/view-vector',
-        element: <View_Vector />,
+        element: <List_Vector />,
       },
 
       {

@@ -1,32 +1,24 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useFetchAllBooksQuery } from '../Endpoints/vector_endpoints';
 
-const View_Vector = () => {
-  const [books, setBooks] = useState([]);
+const List_Vector = () => {
+  const [info, setInfo] = useState([]);
   const [url, setUrl] = useState();
 
-  console.log(books);
-
-  const fetchAllBooks = async () => {
-    try {
-      const res = await axios.get('http://localhost:8000/v1/api/vector');
-      console.log({ res });
-      setBooks(res.data.data);
-      setUrl(res.data.queryParams[0]);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { data, isSuccess } = useFetchAllBooksQuery();
 
   useEffect(() => {
-    fetchAllBooks();
-  }, []);
+    if (isSuccess) {
+      setInfo(data?.data?.data);
+      setUrl(data?.data?.queryParams[0]);
+    }
+  }, [data, isSuccess]);
 
   const handleDelete = async (bookId) => {
     try {
       await axios.delete('http://localhost:8000/v1/api/vector/' + bookId);
-      fetchAllBooks();
     } catch (error) {
       console.log(error);
     }
@@ -42,7 +34,7 @@ const View_Vector = () => {
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {books?.map((item, index) => (
+          {info?.map((item, index) => (
             <div className="bg-white shadow-md rounded-md" key={index}>
               <img
                 src={`http://${url}/uploads/${item.image}`}
@@ -72,4 +64,4 @@ const View_Vector = () => {
   );
 };
 
-export default View_Vector;
+export default List_Vector;

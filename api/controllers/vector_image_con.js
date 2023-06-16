@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { db } from '../db/db.js';
 import { homeDir } from '../index.js';
+import { Response } from '../utils/response.js';
 
 //POST
 export const vector_post = async (req, res, next) => {
@@ -53,8 +54,12 @@ export const vector_get = async (req, res, next) => {
   const queryParams = [serverAddress + ':8000'];
 
   db.query(query, queryParams, (err, data) => {
-    if (err) return res.json(err);
-    return res.json({ data, queryParams });
+    if (err) {
+      const response = Response(false, err, 400);
+      return res.status(400).json(response);
+    }
+    const response = Response(true, { data, queryParams }, 200);
+    return res.status(200).json(response);
   });
 };
 
@@ -75,27 +80,20 @@ export const vector_delete = async (req, res, next) => {
     }
 
     const coverPath = result[0].image;
-
     let dir = result[0].imgPath;
-
-    // const currentDir = dirname(import.meta);
-
     const absolutePath = path.join(homeDir, dir, coverPath);
+    console.log({ absolutePath, coverPath, dir });
 
-    console.log({ absolutePath });
-
-    if (coverPath) {
-      await fs.unlink(absolutePath, (err) => {
-        if (err) {
-          console.log(err);
-          return res.json(err);
-        }
-        // File deletion successful
-      });
+    async function deleteFileIfExists() {
+      try {
+        await fs.promises.access(absolutePath, fs.constants.F_OK);
+        await fs.promises.unlink(absolutePath);
+      } catch (err) {}
     }
 
-    const deleteQuery = 'DELETE FROM vectorwall WHERE id = ?';
+    deleteFileIfExists();
 
+    const deleteQuery = 'DELETE FROM vectorwall WHERE id = ?';
     let deletionCounter = 0;
 
     db.query(deleteQuery, [bookId], (deleteErr, data) => {
@@ -106,7 +104,7 @@ export const vector_delete = async (req, res, next) => {
       deletionCounter++;
 
       if (deletionCounter === 1) {
-        return res.json('Book and image have been deleted successfully');
+        return res.json('Image have been deleted successfully');
       }
     });
   });

@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePostVectorMutation } from '../Endpoints/vector_endpoints';
 
 const Add_Vector = () => {
+  const [postImg, { isSuccess }] = usePostVectorMutation();
+
   const [images, setImages] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
@@ -10,8 +13,6 @@ const Add_Vector = () => {
     price: '',
     covers: [],
   });
-
-  console.log({ images });
 
   const navigate = useNavigate();
 
@@ -32,25 +33,42 @@ const Add_Vector = () => {
     setImages((prevImages) => [...prevImages, ...uploadedImages]);
   };
 
+  // {******OLD CODE --- (DON'T REMOVE)*************}
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+
+  //   try {
+  //     const fData = new FormData();
+  //     fData.append('title', formData.title);
+  //     fData.append('desc', formData.desc);
+  //     fData.append('price', formData.price);
+
+  //     for (let i = 0; i < formData.covers?.length; i++) {
+  //       fData.append('covers', formData.covers[i]);
+  //     }
+
+  //     console.log({ fData });
+
+  //     await axios.post('http://localhost:8000/v1/api/vector', fData, {
+  //       headers: { 'Content-Type': 'multipart/form-data' },
+  //     });
+
+  //     // navigate('/');
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
       const fData = new FormData();
       fData.append('title', formData.title);
-      fData.append('desc', formData.desc);
-      fData.append('price', formData.price);
-
       for (let i = 0; i < formData.covers?.length; i++) {
         fData.append('covers', formData.covers[i]);
       }
-
-      console.log({ fData });
-
-      await axios.post('http://localhost:8000/v1/api/vector', fData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
+      await postImg(fData);
       // navigate('/');
     } catch (error) {
       console.log(error);
