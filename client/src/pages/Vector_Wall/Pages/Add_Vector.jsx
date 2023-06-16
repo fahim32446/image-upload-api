@@ -47,11 +47,11 @@ const Add_Vector = () => {
 
       console.log({ fData });
 
-      await axios.post('http://localhost:8000/books', fData, {
+      await axios.post('http://localhost:8000/v1/api/vector', fData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      navigate('/');
+      // navigate('/');
     } catch (error) {
       console.log(error);
     }
